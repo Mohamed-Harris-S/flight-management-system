@@ -3,6 +3,8 @@ package com.flightmanagement.flight_management_system.service;
 import com.flightmanagement.flight_management_system.dto.AirportRequest;
 import com.flightmanagement.flight_management_system.dto.AirportResponse;
 import com.flightmanagement.flight_management_system.entity.Airport;
+import com.flightmanagement.flight_management_system.exception.DuplicateResourceException;
+import com.flightmanagement.flight_management_system.exception.ResourceNotFoundException;
 import com.flightmanagement.flight_management_system.repository.AirportRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,9 @@ public class AirportService {
 
     public AirportResponse createAirport(AirportRequest airportRequest){
         if(airportRepository.existsByCode(airportRequest.getCode())){
-            throw new RuntimeException("Airport already exists");
+            throw new DuplicateResourceException(
+                    "Airport with code " + airportRequest.getCode() + " already exists"
+            );
         }
         Airport airport = new Airport();
         airport.setName(airportRequest.getName());
@@ -32,8 +36,10 @@ public class AirportService {
     }
 
     public AirportResponse getAirportById(Long id){
-        Airport airport = airportRepository.findById(id).
-                orElseThrow( () -> new RuntimeException("Airport not found with id: "+id) );
+        Airport airport = airportRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                "Airport not found with id: " + id
+        ));
         return toResponse(airport);
     }
 
@@ -47,7 +53,7 @@ public class AirportService {
     public AirportResponse updateAirport(Long id, AirportRequest request) {
 
         Airport airport = airportRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Airport not found with id: " + id
                 ));
 
@@ -62,7 +68,7 @@ public class AirportService {
 
     public void deleteAirport(Long id) {
         if (!airportRepository.existsById(id)) {
-            throw new RuntimeException(
+            throw new ResourceNotFoundException(
                     "Airport not found with id: " + id
             );
         }
