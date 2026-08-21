@@ -3,6 +3,7 @@ package com.flightmanagement.flight_management_system.controller;
 import com.flightmanagement.flight_management_system.dto.AirportRequest;
 import com.flightmanagement.flight_management_system.dto.AirportResponse;
 import com.flightmanagement.flight_management_system.service.AirportService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +31,14 @@ public class AirportController {
     }
 
     @PostMapping
-    public ResponseEntity<AirportResponse> createAirport(@RequestBody AirportRequest airportRequest){
+    public ResponseEntity<AirportResponse> createAirport(@Valid @RequestBody AirportRequest airportRequest){
         AirportResponse response = airportService.createAirport(airportRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     public AirportResponse updateAirport(@PathVariable Long id,
-                                         @RequestBody AirportRequest airportRequest){
+                                         @Valid @RequestBody AirportRequest airportRequest){
         return airportService.updateAirport(id, airportRequest);
     }
 
@@ -46,6 +47,5 @@ public class AirportController {
         airportService.deleteAirport(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }
