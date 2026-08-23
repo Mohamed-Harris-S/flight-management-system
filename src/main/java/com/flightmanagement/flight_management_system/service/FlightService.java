@@ -13,6 +13,7 @@ import com.flightmanagement.flight_management_system.repository.FlightRepository
 import com.flightmanagement.flight_management_system.entity.Flight.FlightStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -80,6 +81,10 @@ public class FlightService {
         flight.setStatus(request.getStatus());
         Flight savedFlight = flightRepository.save(flight);
         return toResponse(savedFlight);
+    }
+
+    public List<FlightResponse> searchFlights(String source, String destination, LocalDate date){
+        return flightRepository.searchFlights(source,destination,date).stream().map(this::toResponse).toList();
     }
 
 
