@@ -2,6 +2,7 @@ package com.flightmanagement.flight_management_system.controller;
 
 import com.flightmanagement.flight_management_system.dto.FlightRequest;
 import com.flightmanagement.flight_management_system.dto.FlightResponse;
+import com.flightmanagement.flight_management_system.dto.FlightStatusUpdateRequest;
 import com.flightmanagement.flight_management_system.service.FlightService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,12 @@ public class FlightController {
         FlightResponse response = flightService.createFlight(request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PatchMapping("/{id}")
+    public FlightResponse updateFlightStatus(@PathVariable Long id,
+                                             @Valid @RequestBody FlightStatusUpdateRequest request){
+        return flightService.updateFlightStatus(id,request);
     }
 
 

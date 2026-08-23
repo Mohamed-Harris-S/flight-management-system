@@ -3,12 +3,14 @@ package com.flightmanagement.flight_management_system.service;
 import com.flightmanagement.flight_management_system.dto.AirportResponse;
 import com.flightmanagement.flight_management_system.dto.FlightRequest;
 import com.flightmanagement.flight_management_system.dto.FlightResponse;
+import com.flightmanagement.flight_management_system.dto.FlightStatusUpdateRequest;
 import com.flightmanagement.flight_management_system.entity.Airport;
 import com.flightmanagement.flight_management_system.entity.Flight;
 import com.flightmanagement.flight_management_system.exception.InvalidRequestException;
 import com.flightmanagement.flight_management_system.exception.ResourceNotFoundException;
 import com.flightmanagement.flight_management_system.repository.AirportRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
+import com.flightmanagement.flight_management_system.entity.Flight.FlightStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,7 +53,7 @@ public class FlightService {
         flight.setTotalSeats(request.getTotalSeats());
 
         flight.setAvailableSeats(request.getTotalSeats());
-        flight.setStatus("SCHEDULED");
+        flight.setStatus(FlightStatus.SCHEDULED);
 
         Flight savedFlight = flightRepository.save(flight);
 
@@ -69,6 +71,15 @@ public class FlightService {
                 .orElseThrow( () -> new ResourceNotFoundException("Flight not found with id:" + id) );
 
         return toResponse(flight);
+    }
+
+    public FlightResponse updateFlightStatus(Long id, FlightStatusUpdateRequest request){
+        Flight flight = flightRepository.findById(id)
+                .orElseThrow( () -> new ResourceNotFoundException("Flight not found with id:" + id) );
+
+        flight.setStatus(request.getStatus());
+        Flight savedFlight = flightRepository.save(flight);
+        return toResponse(savedFlight);
     }
 
 

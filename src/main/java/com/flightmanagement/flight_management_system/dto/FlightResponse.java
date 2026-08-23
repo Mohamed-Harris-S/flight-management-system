@@ -1,5 +1,8 @@
 package com.flightmanagement.flight_management_system.dto;
 
+
+import com.flightmanagement.flight_management_system.entity.Flight.FlightStatus;
+
 import java.time.LocalDateTime;
 
 public class FlightResponse {
@@ -12,14 +15,14 @@ public class FlightResponse {
     private LocalDateTime arrivalTime;
     private Integer totalSeats;
     private Integer availableSeats;
-    private String status;
+    private FlightStatus status;
 
     public FlightResponse() {
     }
 
     public FlightResponse(Long id, String flightNumber, AirportResponse sourceAirport,
                           AirportResponse destinationAirport, LocalDateTime departureTime, LocalDateTime arrivalTime,
-                          Integer totalSeats, Integer availableSeats, String status) {
+                          Integer totalSeats, Integer availableSeats, FlightStatus status) {
         this.id = id;
         this.flightNumber = flightNumber;
         this.sourceAirport = sourceAirport;
@@ -95,11 +98,11 @@ public class FlightResponse {
         this.availableSeats = availableSeats;
     }
 
-    public String getStatus() {
+    public FlightStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(FlightStatus status) {
         this.status = status;
     }
 }

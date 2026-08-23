@@ -4,12 +4,17 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(
         name = "flights",
         uniqueConstraints = {@UniqueConstraint(name = "uk_flight_number_departure_time",columnNames = {"flight_number","departure_time"})}
 )
 public class Flight {
+
+    public enum FlightStatus {
+        SCHEDULED, BOARDING, DEPARTED, ARRIVED, CANCELLED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,15 +43,17 @@ public class Flight {
     @Column(name = "available_seats", nullable = false)
     private Integer availableSeats;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private FlightStatus status;
+
 
     public Flight() {
     }
 
-    public Flight(String flightNumber, Airport sourceAirport,
-                  Airport destinationAirport, LocalDateTime departureTime,
-                  LocalDateTime arrivalTime, Integer totalSeats, Integer availableSeats, String status) {
+    public Flight(String flightNumber, Airport sourceAirport, Airport destinationAirport,
+                  LocalDateTime departureTime, LocalDateTime arrivalTime, Integer totalSeats,
+                  Integer availableSeats, FlightStatus status) {
         this.flightNumber = flightNumber;
         this.sourceAirport = sourceAirport;
         this.destinationAirport = destinationAirport;
@@ -121,11 +128,11 @@ public class Flight {
         this.availableSeats = availableSeats;
     }
 
-    public String getStatus() {
+    public FlightStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(FlightStatus status) {
         this.status = status;
     }
 }
