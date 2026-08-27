@@ -1,6 +1,8 @@
 package com.flightmanagement.flight_management_system.controller;
 
 
+import com.flightmanagement.flight_management_system.dto.LoginRequest;
+import com.flightmanagement.flight_management_system.dto.LoginResponse;
 import com.flightmanagement.flight_management_system.dto.RegisterRequest;
 import com.flightmanagement.flight_management_system.dto.UserResponse;
 import com.flightmanagement.flight_management_system.service.UserService;
@@ -24,6 +26,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request){
         UserResponse response = userService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> register(@Valid @RequestBody LoginRequest request){
+        LoginResponse response = userService.login(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

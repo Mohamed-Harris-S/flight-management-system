@@ -1,9 +1,13 @@
 package com.flightmanagement.flight_management_system.service;
 
+import com.flightmanagement.flight_management_system.config.JwtUtil;
+import com.flightmanagement.flight_management_system.dto.LoginRequest;
+import com.flightmanagement.flight_management_system.dto.LoginResponse;
 import com.flightmanagement.flight_management_system.dto.RegisterRequest;
 import com.flightmanagement.flight_management_system.dto.UserResponse;
 import com.flightmanagement.flight_management_system.entity.User;
 import com.flightmanagement.flight_management_system.entity.User.Role;
+import com.flightmanagement.flight_management_system.exception.InvalidCredentialsException;
 import com.flightmanagement.flight_management_system.exception.DuplicateResourceException;
 import com.flightmanagement.flight_management_system.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public UserResponse register(RegisterRequest request){
@@ -40,6 +46,19 @@ public class UserService {
 
     }
 
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        return new LoginResponse(token);
+    }
+
+
     private UserResponse toResponse(User user) {
         return new UserResponse(
                 user.getId(),
@@ -48,4 +67,5 @@ public class UserService {
                 user.getRole()
         );
     }
+
 }
