@@ -1,58 +1,31 @@
-package com.flightmanagement.flight_management_system.entity;
+package com.flightmanagement.flight_management_system.dto;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import com.flightmanagement.flight_management_system.entity.Booking.BookingStatus;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "bookings")
-public class Booking {
-
-    public enum BookingStatus{
-        CONFIRMED, CANCELLED
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BookingResponse {
     private Long id;
-
-    @Column(name = "booking_reference", nullable = false,unique = true)
     private String bookingReference;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "flight_id", referencedColumnName = "id")
-    private Flight flight;
-
-    @Column(name = "passenger_name", nullable = false)
+    private FlightResponse flight;
     private String passengerName;
-
-    @Column(name = "passenger_age", nullable = false)
     private Integer passengerAge;
-
-    @Column(name = "status", nullable = false)
     private BookingStatus status;
-
-    @CreationTimestamp
-    @Column(name = "booked_at", nullable = false, updatable = false)
     private LocalDateTime bookedAt;
 
-
-    public Booking() {
+    public BookingResponse() {
     }
 
-    public Booking(String bookingReference, User user, Flight flight, String passengerName,
-                   Integer passengerAge, BookingStatus status) {
+    public BookingResponse(Long id, String bookingReference, FlightResponse flight,
+                           String passengerName,Integer passengerAge, BookingStatus status,
+                           LocalDateTime bookedAt) {
+        this.id = id;
         this.bookingReference = bookingReference;
-        this.user = user;
         this.flight = flight;
         this.passengerName = passengerName;
         this.passengerAge = passengerAge;
         this.status = status;
+        this.bookedAt = bookedAt;
     }
 
     public Long getId() {
@@ -71,20 +44,11 @@ public class Booking {
         this.bookingReference = bookingReference;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-
-    public Flight getFlight() {
+    public FlightResponse getFlight() {
         return flight;
     }
 
-    public void setFlight(Flight flight) {
+    public void setFlight(FlightResponse flight) {
         this.flight = flight;
     }
 
@@ -116,5 +80,7 @@ public class Booking {
         return bookedAt;
     }
 
-
+    public void setBookedAt(LocalDateTime bookedAt) {
+        this.bookedAt = bookedAt;
+    }
 }

@@ -84,7 +84,8 @@ public class FlightService {
     }
 
     public List<FlightResponse> searchFlights(String source, String destination, LocalDate date){
-        return flightRepository.searchFlights(source,destination,date).stream().map(this::toResponse).toList();
+        return flightRepository.searchFlights(source,destination,date)
+                .stream().map(this::toResponse).toList();
     }
 
 
