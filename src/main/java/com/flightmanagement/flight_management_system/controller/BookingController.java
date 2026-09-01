@@ -5,13 +5,10 @@ import com.flightmanagement.flight_management_system.dto.BookingResponse;
 import com.flightmanagement.flight_management_system.service.BookingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/bookings")
+@RequestMapping("/api/bookings")
 public class BookingController {
     private final BookingService bookingService;
 
@@ -24,4 +21,19 @@ public class BookingController {
         BookingResponse response = bookingService.createBooking(bookingRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id){
+        return ResponseEntity.ok(
+                bookingService.getBookingById(id)
+        );
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<BookingResponse> cancelBooking(@PathVariable Long id){
+        return ResponseEntity.ok(bookingService.cancelBooking(id));
+    }
+
+
+
 }

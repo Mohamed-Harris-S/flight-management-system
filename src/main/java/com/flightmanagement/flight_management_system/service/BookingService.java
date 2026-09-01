@@ -17,7 +17,9 @@ import com.flightmanagement.flight_management_system.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,10 +38,8 @@ public class BookingService {
 
     @Transactional
     public BookingResponse createBooking(BookingRequest bookingRequest){
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new ResourceNotFoundException("User not found: " + email));
+        User user = getCurrentUser();
 
         Flight flight = flightRepository.findByIdForUpdate(bookingRequest.getFlightId())
                 .orElseThrow(() ->  new ResourceNotFoundException(
@@ -68,6 +68,56 @@ public class BookingService {
 
 
     }
+
+    @Transactional
+    public BookingResponse cancelBooking(Long id){
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow( ()-> new ResourceNotFoundException("Booking not found: " + id));
+
+        checkOwnershipOrAdmin(booking.getUser().getId());
+
+        if(booking.getStatus() == BookingStatus.CANCELLED){
+            throw new InvalidRequestException(
+                    "Booking is already cancelled"
+            );
+        }
+
+        Flight flight = flightRepository.findByIdForUpdate(booking.getFlight().getId())
+                .orElseThrow( ()-> new ResourceNotFoundException("Flight not found"));
+
+        flight.setAvailableSeats(flight.getAvailableSeats()+1);
+
+        booking.setStatus(BookingStatus.CANCELLED);
+
+        flightRepository.save(flight);
+
+        Booking savedBooking = bookingRepository.save(booking);
+
+        return toResponse(savedBooking);
+
+    }
+
+    public BookingResponse getBookingById(Long id){
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow( () -> new ResourceNotFoundException(
+                        "Booking not found: " + id
+                ));
+
+        checkOwnershipOrAdmin(booking.getUser().getId());
+
+        return toResponse(booking);
+    }
+
+    public List<BookingResponse> getUserBookings(Long userId){
+
+        checkOwnershipOrAdmin(userId);
+
+        return bookingRepository.findByUserId(userId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private String generateBookingReference() {
         return "BK" +
                 UUID.randomUUID()
@@ -76,6 +126,31 @@ public class BookingService {
                         .toUpperCase();
     }
 
+    private User getCurrentUser(){
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private boolean isAdmin(){
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(authority ->
+                        authority.getAuthority()
+                                .equals("ROLE_ADMIN"));
+    }
+
+    private void checkOwnershipOrAdmin(Long ownerId){
+        User currentUser = getCurrentUser();
+        boolean isOwner = currentUser.getId().equals(ownerId);
+
+        if(!isOwner && !isAdmin()){
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+
+    }
 
     private BookingResponse toResponse(Booking booking) {
 
