@@ -63,7 +63,6 @@ public class FlightServiceTest {
         assertEquals(180, response.getAvailableSeats());
         assertEquals(Flight.FlightStatus.SCHEDULED, response.getStatus());
 
-
     }
 
 
