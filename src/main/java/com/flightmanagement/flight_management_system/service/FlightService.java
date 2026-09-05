@@ -11,10 +11,11 @@ import com.flightmanagement.flight_management_system.exception.ResourceNotFoundE
 import com.flightmanagement.flight_management_system.repository.AirportRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
 import com.flightmanagement.flight_management_system.entity.Flight.FlightStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class FlightService {
@@ -62,8 +63,8 @@ public class FlightService {
 
     }
 
-    public List<FlightResponse> getAllFlights(){
-        return flightRepository.findAll().stream().map(this::toResponse).toList();
+    public Page<FlightResponse> getAllFlights(Pageable pageable){
+        return flightRepository.findAll(pageable).map(this::toResponse);
     }
 
     public FlightResponse getFlightById(Long id){
@@ -83,9 +84,8 @@ public class FlightService {
         return toResponse(savedFlight);
     }
 
-    public List<FlightResponse> searchFlights(String source, String destination, LocalDate date){
-        return flightRepository.searchFlights(source,destination,date)
-                .stream().map(this::toResponse).toList();
+    public Page<FlightResponse> searchFlights(String source, String destination, LocalDate date,Pageable pageable){
+        return flightRepository.searchFlights(source,destination,date,pageable).map(this::toResponse);
     }
 
 

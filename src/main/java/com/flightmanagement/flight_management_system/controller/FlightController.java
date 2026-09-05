@@ -5,13 +5,14 @@ import com.flightmanagement.flight_management_system.dto.FlightResponse;
 import com.flightmanagement.flight_management_system.dto.FlightStatusUpdateRequest;
 import com.flightmanagement.flight_management_system.service.FlightService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/flights")
@@ -23,8 +24,8 @@ public class FlightController {
     }
 
     @GetMapping
-    public List<FlightResponse> getAllFlights(){
-        return flightService.getAllFlights();
+    public Page<FlightResponse> getAllFlights(Pageable pageable){
+        return flightService.getAllFlights(pageable);
     }
 
     @GetMapping("/{id}")
@@ -46,14 +47,15 @@ public class FlightController {
     }
 
     @GetMapping("/search")
-    public List<FlightResponse> searchFlights(
+    public Page<FlightResponse> searchFlights(
             @RequestParam(required = false) String source,
             @RequestParam(required = false) String destination,
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date
+            LocalDate date,
+            Pageable pageable
             ){
-        return flightService.searchFlights(source,destination,date);
+        return flightService.searchFlights(source,destination,date,pageable);
     }
 
 
