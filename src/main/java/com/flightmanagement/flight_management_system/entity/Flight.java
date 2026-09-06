@@ -20,7 +20,7 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "flight_number", nullable = false)
+    @Column(name = "flight_number", nullable = false, length = 20)
     private String flightNumber;
 
     @ManyToOne
@@ -44,7 +44,7 @@ public class Flight {
     private Integer availableSeats;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 20)
     private FlightStatus status;
 
 

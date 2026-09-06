@@ -17,7 +17,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "booking_reference", nullable = false,unique = true)
+    @Column(name = "booking_reference", nullable = false,unique = true, length = 20)
     private String bookingReference;
 
     @ManyToOne
@@ -28,13 +28,13 @@ public class Booking {
     @JoinColumn(name = "flight_id", referencedColumnName = "id")
     private Flight flight;
 
-    @Column(name = "passenger_name", nullable = false)
+    @Column(name = "passenger_name", nullable = false, length = 100)
     private String passengerName;
 
     @Column(name = "passenger_age", nullable = false)
     private Integer passengerAge;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 20)
     private BookingStatus status;
 
     @CreationTimestamp

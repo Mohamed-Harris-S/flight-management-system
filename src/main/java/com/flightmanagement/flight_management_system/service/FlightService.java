@@ -8,6 +8,7 @@ import com.flightmanagement.flight_management_system.entity.Airport;
 import com.flightmanagement.flight_management_system.entity.Flight;
 import com.flightmanagement.flight_management_system.exception.InvalidRequestException;
 import com.flightmanagement.flight_management_system.exception.ResourceNotFoundException;
+import com.flightmanagement.flight_management_system.mapper.FlightMapper;
 import com.flightmanagement.flight_management_system.repository.AirportRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
 import com.flightmanagement.flight_management_system.entity.Flight.FlightStatus;
@@ -21,10 +22,12 @@ import java.time.LocalDate;
 public class FlightService {
     private final FlightRepository flightRepository;
     private final AirportRepository airportRepository;
+    private final FlightMapper flightMapper;
 
-    public FlightService(FlightRepository flightRepository, AirportRepository airportRepository){
+    public FlightService(FlightRepository flightRepository, AirportRepository airportRepository, FlightMapper flightMapper){
         this.flightRepository = flightRepository;
         this.airportRepository = airportRepository;
+        this.flightMapper = flightMapper;
     }
 
     public FlightResponse createFlight(FlightRequest request){
@@ -59,12 +62,12 @@ public class FlightService {
 
         Flight savedFlight = flightRepository.save(flight);
 
-        return toResponse(savedFlight);
+        return flightMapper.toFlightResponse(savedFlight);
 
     }
 
     public Page<FlightResponse> getAllFlights(Pageable pageable){
-        return flightRepository.findAll(pageable).map(this::toResponse);
+        return flightRepository.findAll(pageable).map(flightMapper::toFlightResponse);
     }
 
     public FlightResponse getFlightById(Long id){
@@ -72,7 +75,7 @@ public class FlightService {
         Flight flight = flightRepository.findById(id)
                 .orElseThrow( () -> new ResourceNotFoundException("Flight not found with id:" + id) );
 
-        return toResponse(flight);
+        return flightMapper.toFlightResponse(flight);
     }
 
     public FlightResponse updateFlightStatus(Long id, FlightStatusUpdateRequest request){
@@ -81,42 +84,13 @@ public class FlightService {
 
         flight.setStatus(request.getStatus());
         Flight savedFlight = flightRepository.save(flight);
-        return toResponse(savedFlight);
+        return flightMapper.toFlightResponse(savedFlight);
     }
 
     public Page<FlightResponse> searchFlights(String source, String destination, LocalDate date,Pageable pageable){
-        return flightRepository.searchFlights(source,destination,date,pageable).map(this::toResponse);
+        return flightRepository.searchFlights(source,destination,date,pageable).map(flightMapper::toFlightResponse);
     }
 
 
-
-    private FlightResponse toResponse(Flight flight) {
-
-        AirportResponse sourceResponse = toAirportResponse(flight.getSourceAirport());
-
-        AirportResponse destinationResponse = toAirportResponse(flight.getDestinationAirport());
-
-        return new FlightResponse(
-                flight.getId(),
-                flight.getFlightNumber(),
-                sourceResponse,
-                destinationResponse,
-                flight.getDepartureTime(),
-                flight.getArrivalTime(),
-                flight.getTotalSeats(),
-                flight.getAvailableSeats(),
-                flight.getStatus()
-        );
-    }
-
-    private AirportResponse toAirportResponse(Airport airport) {
-        return new AirportResponse(
-                airport.getId(),
-                airport.getCode(),
-                airport.getName(),
-                airport.getCity(),
-                airport.getCountry()
-        );
-    }
 }
 

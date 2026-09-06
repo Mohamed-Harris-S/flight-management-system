@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class FlightRequest {
 
     @NotBlank
+    @Size(max = 20)
     private String flightNumber;
 
     @NotNull

@@ -11,6 +11,7 @@ import com.flightmanagement.flight_management_system.entity.Flight;
 import com.flightmanagement.flight_management_system.entity.User;
 import com.flightmanagement.flight_management_system.exception.InvalidRequestException;
 import com.flightmanagement.flight_management_system.exception.ResourceNotFoundException;
+import com.flightmanagement.flight_management_system.mapper.BookingMapper;
 import com.flightmanagement.flight_management_system.repository.BookingRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
 import com.flightmanagement.flight_management_system.repository.UserRepository;
@@ -28,12 +29,15 @@ public class BookingService {
     private final FlightRepository flightRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final BookingMapper bookingMapper;
 
     public BookingService(FlightRepository flightRepository,
-                          UserRepository userRepository, BookingRepository bookingRepository){
+                          UserRepository userRepository, BookingRepository bookingRepository,
+                          BookingMapper bookingMapper){
         this.flightRepository = flightRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.bookingMapper = bookingMapper;
     }
 
     @Transactional
@@ -64,7 +68,7 @@ public class BookingService {
         booking.setPassengerAge(bookingRequest.getPassengerAge());
 
         Booking savedBooking = bookingRepository.save(booking);
-        return toResponse(savedBooking);
+        return bookingMapper.toBookingResponse(savedBooking);
 
 
     }
@@ -93,7 +97,7 @@ public class BookingService {
 
         Booking savedBooking = bookingRepository.save(booking);
 
-        return toResponse(savedBooking);
+        return bookingMapper.toBookingResponse(savedBooking);
 
     }
 
@@ -105,7 +109,8 @@ public class BookingService {
 
         checkOwnershipOrAdmin(booking.getUser().getId());
 
-        return toResponse(booking);
+
+        return bookingMapper.toBookingResponse(booking);
     }
 
     public List<BookingResponse> getUserBookings(Long userId){
@@ -114,7 +119,7 @@ public class BookingService {
 
         return bookingRepository.findByUserId(userId)
                 .stream()
-                .map(this::toResponse)
+                .map(bookingMapper::toBookingResponse)
                 .toList();
     }
 
@@ -152,48 +157,6 @@ public class BookingService {
 
     }
 
-    private BookingResponse toResponse(Booking booking) {
-
-        Flight flight = booking.getFlight();
-
-        AirportResponse sourceResponse = toAirportResponse(flight.getSourceAirport());
-
-        AirportResponse destinationResponse = toAirportResponse(flight.getDestinationAirport());
-
-        FlightResponse flightResponse = new FlightResponse(
-                flight.getId(),
-                flight.getFlightNumber(),
-                sourceResponse,
-                destinationResponse,
-                flight.getDepartureTime(),
-                flight.getArrivalTime(),
-                flight.getTotalSeats(),
-                flight.getAvailableSeats(),
-                flight.getStatus()
-        );
-
-
-        return new BookingResponse(
-                booking.getId(),
-                booking.getBookingReference(),
-                flightResponse,
-                booking.getPassengerName(),
-                booking.getPassengerAge(),
-                booking.getStatus(),
-                booking.getBookedAt()
-
-        );
-    }
-
-    private AirportResponse toAirportResponse(Airport airport) {
-        return new AirportResponse(
-                airport.getId(),
-                airport.getCode(),
-                airport.getName(),
-                airport.getCity(),
-                airport.getCountry()
-        );
-    }
 
 
 }
