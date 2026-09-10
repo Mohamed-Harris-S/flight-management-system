@@ -3,7 +3,15 @@ package com.flightmanagement.flight_management_system.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class BookingRequest {
 
     @NotNull
@@ -16,37 +24,4 @@ public class BookingRequest {
     @Positive
     private Integer passengerAge;
 
-    public BookingRequest(){
-
-    }
-
-    public BookingRequest(Long flightId, String passengerName, Integer passengerAge) {
-        this.flightId = flightId;
-        this.passengerName = passengerName;
-        this.passengerAge = passengerAge;
-    }
-
-    public Long getFlightId() {
-        return flightId;
-    }
-
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
-    }
-
-    public String getPassengerName() {
-        return passengerName;
-    }
-
-    public void setPassengerName(String passengerName) {
-        this.passengerName = passengerName;
-    }
-
-    public Integer getPassengerAge() {
-        return passengerAge;
-    }
-
-    public void setPassengerAge(Integer passengerAge) {
-        this.passengerAge = passengerAge;
-    }
 }

@@ -6,6 +6,7 @@ import com.flightmanagement.flight_management_system.entity.Airport;
 import com.flightmanagement.flight_management_system.entity.Flight;
 import com.flightmanagement.flight_management_system.exception.InvalidRequestException;
 import com.flightmanagement.flight_management_system.exception.ResourceNotFoundException;
+import com.flightmanagement.flight_management_system.mapper.FlightMapper;
 import com.flightmanagement.flight_management_system.repository.AirportRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ public class FlightServiceTest {
 
     @Mock
     private AirportRepository airportRepository;
+
+    @Mock
+    private FlightMapper flightMapper;
 
     @InjectMocks
     private FlightService flightService;
@@ -57,6 +61,13 @@ public class FlightServiceTest {
                     return f;
                 }
         );
+
+        FlightResponse flightResponse = new FlightResponse();
+        flightResponse.setAvailableSeats(180);
+        flightResponse.setStatus(Flight.FlightStatus.SCHEDULED);
+
+        when(flightMapper.toFlightResponse(any(Flight.class)))
+                .thenReturn(flightResponse);
 
         FlightResponse response = flightService.createFlight(request);
 

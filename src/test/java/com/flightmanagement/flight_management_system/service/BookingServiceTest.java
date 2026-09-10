@@ -7,6 +7,7 @@ import com.flightmanagement.flight_management_system.entity.Booking;
 import com.flightmanagement.flight_management_system.entity.Flight;
 import com.flightmanagement.flight_management_system.entity.User;
 import com.flightmanagement.flight_management_system.exception.InvalidRequestException;
+import com.flightmanagement.flight_management_system.mapper.BookingMapper;
 import com.flightmanagement.flight_management_system.repository.BookingRepository;
 import com.flightmanagement.flight_management_system.repository.FlightRepository;
 import com.flightmanagement.flight_management_system.repository.UserRepository;
@@ -37,13 +38,16 @@ public class BookingServiceTest {
     @Mock
     private  BookingRepository bookingRepository;
 
+    @Mock
+    private BookingMapper bookingMapper;
+
     @InjectMocks
     private BookingService bookingService;
 
+
+
     @Test
     void createBooking_shouldSucceed_whenSeatsAvailable() {
-
-
 
         Flight flight = new Flight(/* ... */);
         flight.setId(1L);
@@ -62,6 +66,8 @@ public class BookingServiceTest {
         flight.setDestinationAirport(destination);
 
         BookingRequest request = new BookingRequest(1L, "John Doe", 30);
+        BookingResponse bookingResponse = new BookingResponse();
+        bookingResponse.setBookingReference("BK12345678");
 
         try (MockedStatic<SecurityContextHolder> mockedContext = mockStatic(SecurityContextHolder.class)) {
 
@@ -85,8 +91,11 @@ public class BookingServiceTest {
             savedBooking.setBookingReference("BK12345678");
 
             when(bookingRepository.save(any(Booking.class))).thenReturn(savedBooking);
+            when(bookingMapper.toBookingResponse(any(Booking.class)))
+                    .thenReturn(bookingResponse);
 
             BookingResponse response = bookingService.createBooking(request);
+
 
             assertNotNull(response);
             assertNotNull(response.getBookingReference());
@@ -96,6 +105,7 @@ public class BookingServiceTest {
             verify(flightRepository).findByIdForUpdate(1L);
             verify(flightRepository).save(flight);
             verify(bookingRepository).save(any(Booking.class));
+            verify(bookingMapper).toBookingResponse(savedBooking);
         }
     }
 
@@ -190,6 +200,11 @@ public class BookingServiceTest {
         booking.setUser(user);
         booking.setFlight(flight);
         booking.setStatus(Booking.BookingStatus.CONFIRMED);
+        booking.setBookingReference("BK12345678");
+
+        BookingResponse bookingResponse = new BookingResponse();
+        bookingResponse.setBookingReference("BK12345678");
+
 
         try (MockedStatic<SecurityContextHolder> mockedContext = mockStatic(SecurityContextHolder.class)) {
 
@@ -207,15 +222,19 @@ public class BookingServiceTest {
             when(flightRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(flight));
             when(bookingRepository.save(booking)).thenReturn(booking);
 
+            when(bookingMapper.toBookingResponse(any(Booking.class))).thenReturn(bookingResponse);
+
             BookingResponse response = bookingService.cancelBooking(1L);
 
             assertNotNull(response);
+            assertEquals( "BK12345678", response.getBookingReference() );
             assertEquals(5, flight.getAvailableSeats());
             assertEquals(Booking.BookingStatus.CANCELLED, booking.getStatus());
 
             verify(flightRepository).findByIdForUpdate(1L);
             verify(flightRepository).save(flight);
             verify(bookingRepository).save(booking);
+            verify(bookingMapper) .toBookingResponse(booking);
 
         }
     }

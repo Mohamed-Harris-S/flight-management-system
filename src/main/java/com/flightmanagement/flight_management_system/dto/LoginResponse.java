@@ -1,21 +1,15 @@
-    package com.flightmanagement.flight_management_system.dto;
+package com.flightmanagement.flight_management_system.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
     private String token;
 
-    public LoginResponse(){
-
-    }
-
-    public LoginResponse(String token) {
-        this.token = token;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }
