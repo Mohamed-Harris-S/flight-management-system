@@ -38,8 +38,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/airports/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/flights").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/flights/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
+                        .permitAll().anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
