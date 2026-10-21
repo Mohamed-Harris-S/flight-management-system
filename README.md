@@ -5,7 +5,7 @@ A backend REST API for flight search and booking, built with Java and Spring Boo
 This project was built end-to-end — database design, entity relationships, business logic, security, and testing — as a demonstration of backend development fundamentals.
 
 
-**Swagger UI:** https://flight-management-system-production-75f5.up.railway.app/swagger-ui.html
+**Swagger UI:** https://flight-management-system-n41g.onrender.com/swagger-ui/index.html
 
 
 ---
@@ -38,7 +38,7 @@ This project implements that system as a REST API, with particular attention to 
 - **Pagination** — on flight listing and search endpoints
 - **Interactive API documentation** — Swagger/OpenAPI, with JWT bearer-token support built in
 - **Containerized** — multi-stage Docker build
-- **Deployed and live** — running on Railway (app + MySQL)
+- **Deployed and live** — running on Render (app) and Aiven (MySQL)
   
 ---
 
@@ -46,7 +46,7 @@ This project implements that system as a REST API, with particular attention to 
 
 The project follows a standard layered architecture:
 
-<img width="2272" height="573" alt="Architecture-Diagram drawio" src="https://github.com/user-attachments/assets/8dd3861f-7682-4212-9cfc-225baf3bf422" />
+<img width="2372" height="873" alt="Architecture-Diagram drawio" src="https://github.com/user-attachments/assets/8dd3861f-7682-4212-9cfc-225baf3bf422" />
 
 
 - **Controllers** — thin; handle HTTP concerns only (request parsing, status codes)
@@ -72,7 +72,7 @@ The project follows a standard layered architecture:
 | API Documentation | springdoc-openapi / Swagger UI |
 | Build Tool | Maven |
 | Containerization | Docker (multi-stage build) |
-| Deployment | Railway |
+| Deployment | Render (app), Aiven (MySQL) |
 | Version Control | Git / GitHub |
 
 ---

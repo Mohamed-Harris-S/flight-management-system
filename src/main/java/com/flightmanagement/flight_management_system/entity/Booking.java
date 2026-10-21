@@ -34,6 +34,7 @@ public class Booking {
     @Column(name = "passenger_age", nullable = false)
     private Integer passengerAge;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private BookingStatus status;
 
